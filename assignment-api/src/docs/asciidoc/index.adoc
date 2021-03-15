@@ -1,0 +1,82 @@
+= Rest Docs Sample API Document
+https://github.com/plzhans/test-assignment-kakaopay
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+[[introduction]]
+== 소개
+
+ Kakaopay assignment rest docs API
+
+[[common]]
+== 공통 사항
+
+아래 사항을 지켜주세요.
+
+=== Domain
+
+|===
+| 환경 | domain
+
+| 로컬 서버
+| `localhost:9090`
+
+//| 개발 서버
+//| `dev-assignment-kakaopay.plzhans.com`
+|===
+
+
+=== Header
+
+|===
+| name | 설명
+
+| `Authorization`
+| API를 사용하기 위한 인증 키
+|===
+
+=== 공통 Response Body
+
+|===
+| field | 설명
+
+| `code`
+| 응답 코드
+
+| `message`
+| 예외사항 내용 등 응답 메세지
+
+|===
+
+[[hello]]
+== Hello World API
+
+=== Request
+
+//CURL:
+//
+//include::{snippets}/hello-world/curl-request.adoc[]
+
+//Request Parameters:
+//
+//include::{snippets}/test-controller-test/$test/request-parameters.adoc[]
+
+Request HTTP Example:
+
+include::{snippets}/test-controller-test/$test/http-request.adoc[]
+
+=== Response
+
+Response Fields:
+
+include::{snippets}/test-controller-test/$test/response-fields.adoc[]
+
+Response HTTP Example:
+
+include::{snippets}/test-controller-test/$test/http-response.adoc[]
+
+

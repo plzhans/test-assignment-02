@@ -1,0 +1,6 @@
+rootProject.name = 'test-assignment-kakaopay'
+// api server
+include 'assignment-api'
+include 'assignment-common'
+
+
