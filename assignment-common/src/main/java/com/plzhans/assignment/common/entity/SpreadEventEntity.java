@@ -15,6 +15,7 @@ import java.util.List;
  * The type Test entity.
  */
 @Builder
+@EqualsAndHashCode(callSuper=false)
 @Data
 @ToString(exclude = "amounts")
 @Entity
@@ -37,7 +38,7 @@ public class SpreadEventEntity extends BaseDatedEntity {
     int userId;
 
     @Column(name = "room_id")
-    int roomId;
+    String roomId;
 
     @Column(name = "token")
     String token;

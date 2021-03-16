@@ -1,6 +1,8 @@
 package com.plzhans.assignment.api.service.spread.datatype;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.plzhans.assignment.common.domain.DateTimeFormatter;
 import com.plzhans.assignment.common.domain.spread.SpreadAmountState;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
 import lombok.*;
@@ -16,10 +18,11 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DistributeStatusDto {
+public class DistributeStatus {
     /**
      * 뿌린 시각
      */
+    @JsonFormat(pattern = DateTimeFormatter.DEFAULT_ISO_PATTERN)
     @JsonProperty("created_date")
     LocalDateTime createdDate;
 
@@ -39,9 +42,9 @@ public class DistributeStatusDto {
      * 받기 완료된 정보
      */
     @JsonProperty("receivers")
-    List<DistributeReceiverDto> receivers;
+    List<DistributeReceiver> receivers;
 
-    public DistributeStatusDto(SpreadEventEntity entity) {
+    public DistributeStatus(SpreadEventEntity entity) {
         this.createdDate = entity.getCreatedAt();
         this.totalAmount = entity.getTotalAmount();
         val amounts = entity.getAmounts();
@@ -50,7 +53,7 @@ public class DistributeStatusDto {
             amounts.forEach(x -> {
                 // 받은 금액만
                 if (x.getState() == SpreadAmountState.Received) {
-                    this.receivers.add(new DistributeReceiverDto(x));
+                    this.receivers.add(new DistributeReceiver(x));
                     this.receivedAmount += x.getAmount();
                 }
             });

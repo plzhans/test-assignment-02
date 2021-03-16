@@ -15,7 +15,7 @@ CREATE TABLE t_spread_event
     no              int(10) NOT NULL IDENTITY PRIMARY KEY,
     state           tinyint(4) NOT NULL DEFAULT '0',
     user_id         int(11) NOT NULL,
-    room_id         int(11) NOT NULL,
+    room_id         varchar(100) NOT NULL DEFAULT '',
     token           varchar(100) NOT NULL DEFAULT '',
     total_amount    int(11) NOT NULL,
     receiver_count  int(11) NOT NULL,

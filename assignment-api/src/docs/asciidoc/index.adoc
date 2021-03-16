@@ -1,5 +1,4 @@
-= Rest Docs Sample API Document
-https://github.com/plzhans/test-assignment-kakaopay
+= 머니 뿌리기 API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -10,24 +9,22 @@ https://github.com/plzhans/test-assignment-kakaopay
 [[introduction]]
 == 소개
 
- Kakaopay assignment rest docs API
+ 테스트용 뿌리기 API 입니다.
 
 [[common]]
 == 공통 사항
 
 아래 사항을 지켜주세요.
 
-=== Domain
-
-|===
-| 환경 | domain
-
-| 로컬 서버
-| `localhost:9090`
-
-//| 개발 서버
-//| `dev-assignment-kakaopay.plzhans.com`
-|===
+//=== Domain
+//
+//|===
+//| 환경 | domain
+//
+//| 로컬 서버
+//| `localhost:9090`
+//
+//|===
 
 
 === Header
@@ -35,48 +32,110 @@ https://github.com/plzhans/test-assignment-kakaopay
 |===
 | name | 설명
 
-| `Authorization`
-| API를 사용하기 위한 인증 키
+| `X-USER-ID"`
+| 요청한 사용자의 식별값 (숫자)
+| `X-ROOM-ID"`
+| 요청한 사용자가 속한 대화방의 식별값 (문자)
 |===
 
-=== 공통 Response Body
+=== Response status
 
 |===
-| field | 설명
+| status | 설명
 
-| `code`
-| 응답 코드
+| `200`
+| OK : 성공
 
-| `message`
-| 예외사항 내용 등 응답 메세지
+| `403`
+| BadRequest : 잘못된 요청
+
+| `500`
+| 서버 오류
 
 |===
 
-[[hello]]
-== Hello World API
+[[distribute]]
+== 뿌리기
+머니 뿌리기 API
 
 === Request
 
-//CURL:
-//
-//include::{snippets}/hello-world/curl-request.adoc[]
+CURL:
 
-//Request Parameters:
-//
-//include::{snippets}/test-controller-test/$test/request-parameters.adoc[]
+include::{snippets}/spread-controller-test/$distribute/curl-request.adoc[]
 
-Request HTTP Example:
+Fields:
 
-include::{snippets}/test-controller-test/$test/http-request.adoc[]
+include::{snippets}/spread-controller-test/$distribute/request-fields.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$distribute/http-request.adoc[]
 
 === Response
 
-Response Fields:
+Fields:
 
-include::{snippets}/test-controller-test/$test/response-fields.adoc[]
+include::{snippets}/spread-controller-test/$distribute/response-fields.adoc[]
 
-Response HTTP Example:
+HTTP Example:
 
-include::{snippets}/test-controller-test/$test/http-response.adoc[]
+include::{snippets}/spread-controller-test/$distribute/http-response.adoc[]
 
 
+[[distribute-status]]
+== 조회
+머니 뿌리기 조회 API
+
+=== Request
+
+CURL:
+
+include::{snippets}/spread-controller-test/$distribute_status/curl-request.adoc[]
+
+Parameters:
+
+include::{snippets}/spread-controller-test/$distribute_status/request-parameters.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$distribute_status/http-request.adoc[]
+
+=== Response
+
+Fields:
+
+include::{snippets}/spread-controller-test/$distribute_status/response-fields.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$distribute_status/http-response.adoc[]
+
+
+[[distribute-status]]
+== 받기
+머니 뿌리기 받기 API
+
+=== Request
+
+CURL:
+
+include::{snippets}/spread-controller-test/$receive/curl-request.adoc[]
+
+Parameters:
+
+include::{snippets}/spread-controller-test/$receive/request-parameters.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$receive/http-request.adoc[]
+
+=== Response
+
+Fields:
+
+include::{snippets}/spread-controller-test/$receive/response-fields.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$receive/http-response.adoc[]

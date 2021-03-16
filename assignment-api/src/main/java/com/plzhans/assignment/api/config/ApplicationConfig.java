@@ -14,6 +14,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan({"com.plzhans.assignment.common.entity","com.plzhans.assignment.api.entity"})
 public class ApplicationConfig {
 
-
-
 }

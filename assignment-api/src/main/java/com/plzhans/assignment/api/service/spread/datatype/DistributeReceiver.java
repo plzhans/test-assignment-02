@@ -6,7 +6,7 @@ import com.plzhans.assignment.common.entity.SpreadAmountEntity;
 /**
  * The type Distribute receiver dto.
  */
-public class DistributeReceiverDto {
+public class DistributeReceiver {
     /**
      * 받은 금액
      */
@@ -19,7 +19,7 @@ public class DistributeReceiverDto {
     @JsonProperty("user_id")
     int userId;
 
-    public DistributeReceiverDto(SpreadAmountEntity entity) {
+    public DistributeReceiver(SpreadAmountEntity entity) {
         this.amount = entity.getAmount();
         this.userId = entity.getReceiverId();
     }

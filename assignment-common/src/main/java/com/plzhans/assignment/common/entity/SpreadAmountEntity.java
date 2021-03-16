@@ -2,16 +2,14 @@ package com.plzhans.assignment.common.entity;
 
 import com.plzhans.assignment.common.domain.spread.SpreadAmountState;
 import com.plzhans.assignment.common.entity.convert.SpreadAttributeConverters;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Builder
+@EqualsAndHashCode(callSuper=false)
 @Data
 @Entity
 @Table(name = "t_spread_amount")

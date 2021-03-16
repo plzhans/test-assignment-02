@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 public class SpreadServiceImpl implements SpreadService {
 
 
-    static final int DEFAULT_DISTRIBUTE_EXPIRED_SECONDS = 60 * 10;
-    static final int DEFAULT_FIND_INACTIVE_DAYS = 7;
+    public static final int DEFAULT_DISTRIBUTE_EXPIRED_SECONDS = 60 * 10;
+    public static final int DEFAULT_FIND_INACTIVE_DAYS = 7;
 
     SpreadTokenGenerator spreadTokenGenerator;
     SpreadAmountGenerator spreadAmountGenerator;
@@ -30,7 +30,7 @@ public class SpreadServiceImpl implements SpreadService {
 
     @Transactional
     @Override
-    public DistributeResult distribute(AuthRoomRequester requester, DistributeRequest request) throws Exception {
+    public DistributeResult distribute(AuthRoomRequester requester, DistributeParam param) throws Exception {
 
         // entity
         val entity = SpreadEventEntity.builder()
@@ -38,8 +38,8 @@ public class SpreadServiceImpl implements SpreadService {
                 .token(spreadTokenGenerator.nextToken())
                 .userId(requester.getUserId())
                 .roomId(requester.getRoomId())
-                .totalAmount(request.getAmount())
-                .receiverCount(request.getReceiverCount())
+                .totalAmount(param.getAmount())
+                .receiverCount(param.getReceiverCount())
                 .expiredSeconds(DEFAULT_DISTRIBUTE_EXPIRED_SECONDS)
                 .build();
         entity.addAmount(spreadAmountGenerator.generateToList(entity.getTotalAmount(), entity.getReceiverCount()));
@@ -59,12 +59,12 @@ public class SpreadServiceImpl implements SpreadService {
     }
 
     @Override
-    public DistributeStatusResult getDistributeStatusByToken(AuthRoomRequester requester, String token) throws Exception {
+    public DistributeStatusResult getDistributeStatusByToken(AuthRoomRequester param, String token) throws Exception {
 
-        val entity = this.spreadRepository.findByRoomIdAndToken(requester.getRoomId(), token);
+        val entity = this.spreadRepository.findByRoomIdAndToken(param.getRoomId(), token);
         if (entity == null) {
             throw new Exception("spreadRepository.findByRoomIdAndToken");
-        } else if (entity.getUserId() != requester.getUserId()) {
+        } else if (entity.getUserId() != param.getUserId()) {
             throw new Exception("invalid requester");
         } else if (entity.getCreatedAt().plusDays(DEFAULT_FIND_INACTIVE_DAYS).isBefore(LocalDateTime.now())) {
             throw new Exception("7 day");
@@ -72,14 +72,14 @@ public class SpreadServiceImpl implements SpreadService {
 
         // result
         return DistributeStatusResult.builder()
-                .data(new DistributeStatusDto(entity))
+                .data(new DistributeStatus(entity))
                 .build();
     }
 
     @Override
-    public DistributeReceiveResult receiveByToken(AuthRoomRequester requester, String token) throws Exception {
+    public DistributeReceiveResult receiveByToken(AuthRoomRequester param, String token) throws Exception {
 
-        val entity = this.spreadRepository.findByRoomIdAndToken(requester.getRoomId(), token);
+        val entity = this.spreadRepository.findByRoomIdAndToken(param.getRoomId(), token);
         val amounts = entity.getAmounts();
         if (amounts == null) {
             throw new Exception("invalid amounts");
@@ -91,7 +91,7 @@ public class SpreadServiceImpl implements SpreadService {
         }
 
         // find amount
-        if (amounts.stream().anyMatch(x -> x.getReceiverId() == requester.getUserId())) {
+        if (amounts.stream().anyMatch(x -> x.getReceiverId() == param.getUserId())) {
             throw new Exception("already receiver");
         }
 
@@ -100,7 +100,7 @@ public class SpreadServiceImpl implements SpreadService {
                 .findFirst().orElseThrow(() -> new Exception(""));
 
         // set received
-        amountEntity.setReceived(requester.getUserId());
+        amountEntity.setReceived(param.getUserId());
 
         // repository save
         this.spreadRepository.save(entity);

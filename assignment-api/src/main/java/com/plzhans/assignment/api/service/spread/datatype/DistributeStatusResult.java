@@ -12,6 +12,6 @@ public class DistributeStatusResult {
     /**
      * 상태 정보
      */
-    DistributeStatusDto data;
+    DistributeStatus data;
 
 }

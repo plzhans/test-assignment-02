@@ -2,8 +2,8 @@ package com.plzhans.assignment.api.service.spread;
 
 import com.plzhans.assignment.api.auth.AuthRoomRequester;
 import com.plzhans.assignment.api.repository.SpreadRepository;
+import com.plzhans.assignment.api.service.spread.datatype.DistributeParam;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeReceiveResult;
-import com.plzhans.assignment.api.service.spread.datatype.DistributeRequest;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeResult;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeStatusResult;
 import lombok.val;
@@ -15,27 +15,34 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * The type Spread service impl test.
+ */
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @EnableJpaRepositories({"com.plzhans.assignment.common.repository", "com.plzhans.assignment.api.repository"})
 @EnableJpaAuditing
 @EntityScan({"com.plzhans.assignment.common.entity", "com.plzhans.assignment.api.entity"})
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("debug")
+//@ActiveProfiles("debug")
 public class SpreadServiceImplTest {
 
-    //@MockBean
     @Autowired
     SpreadRepository spreadRepository;
 
+    /**
+     * The Spread service.
+     */
     SpreadService spreadService;
 
+    /**
+     * The Test requester.
+     */
     AuthRoomRequester testRequester;
 
     /**
@@ -44,20 +51,26 @@ public class SpreadServiceImplTest {
     @Before
     public void init() {
         this.spreadService = new SpreadServiceImpl(spreadRepository);
-        this.testRequester = new AuthRoomRequester(3019, 1234);
+        this.testRequester = new AuthRoomRequester(3019, "test-room");
     }
 
+    /**
+     * 뿌리기 로직 jpa 테스트
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void distribute_ok() throws Exception {
+    public void service_and_jpa_test() throws Exception {
 
         // TEST : distribute
         // GIVEN
-        val request = new DistributeRequest();
-        request.setAmount(1000);
-        request.setReceiverCount(5);
+        val param = DistributeParam.builder()
+                .amount(1000)
+                .receiverCount(5)
+                .build();
 
         // WHEN
-        DistributeResult result = this.spreadService.distribute(testRequester, request);
+        DistributeResult result = this.spreadService.distribute(testRequester, param);
 
         // THEN
         assertNotNull(result.getToken());
@@ -67,7 +80,7 @@ public class SpreadServiceImplTest {
         // TEST : getDistributeStatusByToken
         // WHEN
         int totalAmount = 0;
-        for (int i = 1; i <= request.getReceiverCount(); i++) {
+        for (int i = 1; i <= param.getReceiverCount(); i++) {
             val receiver = new AuthRoomRequester(1000 + i, testRequester.getRoomId());
             DistributeReceiveResult distributeReceiveResult = this.spreadService.receiveByToken(receiver, result.getToken());
             val receiveResult = distributeReceiveResult;
@@ -75,7 +88,7 @@ public class SpreadServiceImplTest {
         }
 
         // THEN
-        assertEquals(totalAmount, request.getAmount());
+        assertEquals(totalAmount, param.getAmount());
 
         // TEST : getDistributeStatusByToken
         // WHEN
@@ -84,8 +97,7 @@ public class SpreadServiceImplTest {
         // THEN
         assertNotNull(result2.getData());
         assertEquals(result2.getData().getCreatedDate(), result.getCreatedDate());
-        assertEquals(result2.getData().getTotalAmount(), request.getAmount());
+        assertEquals(result2.getData().getTotalAmount(), param.getAmount());
     }
-
 
 }
