@@ -41,11 +41,11 @@ bootJar {
 
 //task copyDocument(type: Copy) {
 //    dependsOn asciidoctor
-//
 //    from file("build/asciidoc/html5/")
 //    into file("src/main/resources/static/docs")
+//    println("asciidoc copy ok.")
 //}
-//
-//build {
+
+build {
 //    dependsOn copyDocument
-//}
+}

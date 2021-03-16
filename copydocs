@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+cp assignment-api/build/asciidoc/html5/index.html docs/assignment-api-document.html
