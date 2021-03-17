@@ -3,7 +3,7 @@
 ---
 
 ## 분석
-- 요구 상황 : [docs/plan.md](docs/plan.md)
+- 요구 사항 : [docs/plan.md](docs/plan.md)
 
 ### 개발
 - 작성 중..
