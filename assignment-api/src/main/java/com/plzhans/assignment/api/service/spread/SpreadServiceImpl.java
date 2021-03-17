@@ -5,6 +5,7 @@ import com.plzhans.assignment.api.repository.SpreadRepository;
 import com.plzhans.assignment.api.service.spread.datatype.*;
 import com.plzhans.assignment.common.domain.spread.SpreadState;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
+import com.plzhans.assignment.common.error.ClientError;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,14 @@ public class SpreadServiceImpl implements SpreadService {
     @Transactional
     @Override
     public DistributeResult distribute(AuthRoomRequester requester, DistributeParam param) throws Exception {
+        // 컨트롤러에서 걸리지만.. 방어코드
+        if (param.getAmount() <= 0) {
+            // 금액 오류 : 0원 방지
+            throw new ClientError.InvalidParam("amount");
+        } else if (param.getReceiverCount() <= 0) {
+            // 인원수 오류
+            throw new ClientError.InvalidParam("receiverCount");
+        }
 
         // entity
         val entity = SpreadEventEntity.builder()
@@ -58,55 +67,77 @@ public class SpreadServiceImpl implements SpreadService {
                 .build();
     }
 
+    @Transactional
     @Override
-    public DistributeStatusResult getDistributeStatusByToken(AuthRoomRequester param, String token) throws Exception {
+    public DistributeReceiveResult receiveByToken(AuthRoomRequester session, String token) throws Exception {
 
-        val entity = this.spreadRepository.findByRoomIdAndToken(param.getRoomId(), token);
+        val entity = this.spreadRepository.findByTokenAndRoomId(token, session.getRoomId());
         if (entity == null) {
-            throw new Exception("spreadRepository.findByRoomIdAndToken");
-        } else if (entity.getUserId() != param.getUserId()) {
-            throw new Exception("invalid requester");
-        } else if (entity.getCreatedAt().plusDays(DEFAULT_FIND_INACTIVE_DAYS).isBefore(LocalDateTime.now())) {
-            throw new Exception("7 day");
+            throw new ClientError.Notfound("spread");
         }
 
-        // result
-        return DistributeStatusResult.builder()
-                .data(new DistributeStatus(entity))
-                .build();
-    }
+        // 자신이 받을수 없음
+        if (entity.getUserId() == session.getUserId()) {
+            throw new ClientError.InvalidParam("user_id");
+        }
 
-    @Override
-    public DistributeReceiveResult receiveByToken(AuthRoomRequester param, String token) throws Exception {
+        // 만료시간이 지난 뿌리기는 받을수 없음
+        if (entity.getExpiredDate().isBefore(LocalDateTime.now())) {
+            return new DistributeReceiveResult(DistributeReceiveResultCode.Expired);
+        }
 
-        val entity = this.spreadRepository.findByRoomIdAndToken(param.getRoomId(), token);
         val amounts = entity.getAmounts();
         if (amounts == null) {
-            throw new Exception("invalid amounts");
+            throw new ClientError.Notfound("amounts");
         }
 
-        //
-        if(entity.getExpiredDate().isBefore(LocalDateTime.now())){
-            throw new Exception("expired date");
+        // 중복 지급 받을 수 없음
+        val overlap = amounts.stream()
+                .filter(x -> x.getReceiverId() == session.getUserId())
+                .findFirst().orElse(null);
+        if (overlap != null) {
+            return DistributeReceiveResult.builder()
+                    .code(DistributeReceiveResultCode.Received)
+                    .amount(overlap.getAmount())
+                    .build();
         }
 
-        // find amount
-        if (amounts.stream().anyMatch(x -> x.getReceiverId() == param.getUserId())) {
-            throw new Exception("already receiver");
-        }
-
+        // 미지급한 금액 찾기
         val amountEntity = amounts.stream()
                 .filter(x -> x.isReady())
-                .findFirst().orElseThrow(() -> new Exception(""));
+                .findFirst().orElse(null);
+        if (amountEntity == null) {
+            // 더이상 받을 금액이 없음
+            return new DistributeReceiveResult(DistributeReceiveResultCode.Finished);
+        }
 
         // set received
-        amountEntity.setReceived(param.getUserId());
+        amountEntity.setReceived(session.getUserId());
 
         // repository save
         this.spreadRepository.save(entity);
 
         return DistributeReceiveResult.builder()
+                .code(DistributeReceiveResultCode.Ok)
                 .amount(amountEntity.getAmount())
+                .build();
+    }
+
+    @Override
+    public DistributeStatusResult getDistributeStatusByToken(AuthRoomRequester session, String token){
+
+        val entity = this.spreadRepository.findByTokenAndRoomId(token, session.getRoomId());
+        if (entity == null) {
+            throw new ClientError.Notfound("spread");
+        } else if (entity.getUserId() != session.getUserId()) {
+            throw new ClientError.Unauthorized("user_id");
+        } else if (entity.getCreatedAt().plusDays(DEFAULT_FIND_INACTIVE_DAYS).isBefore(LocalDateTime.now())) {
+            throw new ClientError.Expired(String.format("expired %d days.", DEFAULT_FIND_INACTIVE_DAYS));
+        }
+
+        // result
+        return DistributeStatusResult.builder()
+                .data(new DistributeStatus(entity))
                 .build();
     }
 }

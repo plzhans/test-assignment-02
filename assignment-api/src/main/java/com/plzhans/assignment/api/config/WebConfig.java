@@ -1,6 +1,8 @@
 package com.plzhans.assignment.api.config;
 
 import com.plzhans.assignment.api.auth.AuthRoomResolver;
+import com.plzhans.assignment.api.service.common.datatype.ErrorCode;
+import com.plzhans.assignment.api.service.spread.datatype.DistributeReceiveResultCode;
 import com.plzhans.assignment.common.config.CodeEnumableFormatters;
 import com.plzhans.assignment.common.domain.spread.SpreadState;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +44,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         CodeEnumableFormatters.registry(registry, SpreadState.class);
+        CodeEnumableFormatters.registry(registry, ErrorCode.class);
+        CodeEnumableFormatters.registry(registry, DistributeReceiveResultCode.class);
     }
 
 }

@@ -9,7 +9,7 @@
 [[introduction]]
 == 소개
 
- 테스트용 뿌리기 API 입니다.
+ 뿌리기 API 가이드 입니다.
 
 [[common]]
 == 공통 사항
@@ -29,17 +29,19 @@
 
 === Header
 
+[cols="3,7"]
 |===
 | name | 설명
 
-| `X-USER-ID"`
+| `X-USER-ID`
 | 요청한 사용자의 식별값 (숫자)
-| `X-ROOM-ID"`
+| `X-ROOM-ID`
 | 요청한 사용자가 속한 대화방의 식별값 (문자)
 |===
 
 === Response status
 
+[cols="3,7"]
 |===
 | status | 설명
 
@@ -51,6 +53,27 @@
 
 | `500`
 | 서버 오류
+
+|===
+
+=== 공통 오류 코드
+Response body에 code가 있는 경우
+
+[cols="3,3,4"]
+|===
+| code | name | 설명
+
+| `0`
+| Ok
+| 성공
+
+| `1001`
+| InvalidParams
+| 파라메터 오류
+
+| `1000`
+| Error
+| 일반 오류
 
 |===
 

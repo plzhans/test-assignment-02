@@ -1,0 +1,19 @@
+######################################
+# jpa-debug
+######################################
+spring:
+  profiles: jpa-debug
+  # JPA
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+logging:
+  level:
+    org.hibernate:
+      type:
+        descriptor:
+          sql: trace

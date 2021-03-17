@@ -7,6 +7,12 @@ ext {
 }
 
 test {
+    testLogging.showStandardStreams = true
+    testLogging.showCauses = true
+    testLogging.showExceptions = true
+    testLogging.showStackTraces = true
+    testLogging.exceptionFormat = 'full'
+
     outputs.dir snippetsDir
     useJUnitPlatform()
 }

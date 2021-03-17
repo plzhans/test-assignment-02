@@ -21,11 +21,6 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
 #  # mvc
 #  mvc:
 #    view:
@@ -35,9 +30,9 @@ logging:
   file:
     path: logs/apiserver
   level:
-    org.hibernate: info
+    org.hibernate: error
     org.springframework: info
-    org.springframework.web: debug
+    org.springframework.web: info
     com.plzhans.assignment.api:
       controller.ErrorController: error
 

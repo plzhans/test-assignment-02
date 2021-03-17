@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SpreadRepository extends JpaRepository<SpreadEventEntity, Integer> {
-    SpreadEventEntity findByRoomIdAndToken(String roomId, String token);
+    SpreadEventEntity findByTokenAndRoomId(String token, String roomId);
 }

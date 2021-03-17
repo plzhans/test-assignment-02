@@ -1,19 +1,20 @@
-package com.plzhans.assignment.api.service.common.datatype;
+package com.plzhans.assignment.api.service.spread.datatype;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.plzhans.assignment.common.domain.CodeEnumable;
 
-public enum ErrorCode implements CodeEnumable {
+public enum DistributeReceiveResultCode implements CodeEnumable {
 
-    InvalidParams(1001,"invalid params"),
+    Received(2001, "Already received"),
+    Finished(2002, "Already finished"),
+    Expired(2003, "Expired"),
 
-    Error(1000, "Error"),
+    Error(2000, "Ok"),
     Ok(0, "Ok");
-
     int code;
     String message;
 
-    ErrorCode(int code, String message) {
+    DistributeReceiveResultCode(int code, String message){
         this.code = code;
         this.message = message;
     }

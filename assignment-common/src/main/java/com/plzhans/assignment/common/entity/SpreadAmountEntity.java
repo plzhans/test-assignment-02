@@ -46,6 +46,6 @@ public class SpreadAmountEntity extends BaseDatedEntity {
     }
 
     public boolean isReady() {
-        return this.state == SpreadAmountState.Ready;
+        return this.state == SpreadAmountState.Ready && this.receiverId == 0;
     }
 }

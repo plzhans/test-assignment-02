@@ -36,12 +36,12 @@ public class AuthRoomResolver implements HandlerMethodArgumentResolver {
 
         int userId = Integer.valueOf(webRequest.getHeader(USER_ID_HEADER));
         if (StringUtils.isEmpty(userId)) {
-            throw new Exception(String.format("%s header notfound.", USER_ID_HEADER));
+            throw new UnauthorizedException(String.format("%s header notfound.", USER_ID_HEADER));
         }
 
         String roomId = webRequest.getHeader(ROOM_ID_HEADER);
         if (StringUtils.isEmpty(roomId)) {
-            throw new Exception(String.format("%s header notfound.", ROOM_ID_HEADER));
+            throw new UnauthorizedException(String.format("%s header notfound.", ROOM_ID_HEADER));
         }
 
         return new AuthRoomRequester(userId, roomId);

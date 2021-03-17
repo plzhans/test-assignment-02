@@ -31,7 +31,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,11 +65,19 @@ public class SpreadControllerTest {
     int testUserId = 1001;
     String testRoomId = "room-test-id";
 
-    HttpHeaders getDefaultUserAndRoomHeaders() {
+    HttpHeaders getUserAndRoomHeaders() {
+        return getUserAndRoomHeaders(testUserId, testRoomId);
+    }
+
+    HttpHeaders getUserAndRoomHeaders(int userId, String roomId) {
         HttpHeaders header = new HttpHeaders();
-        header.add(AuthRoomResolver.USER_ID_HEADER, String.valueOf(testUserId));
-        header.add(AuthRoomResolver.ROOM_ID_HEADER, testRoomId);
+        header.add(AuthRoomResolver.USER_ID_HEADER, String.valueOf(userId));
+        header.add(AuthRoomResolver.ROOM_ID_HEADER, roomId);
         return header;
+    }
+
+    HttpHeaders getNextUserAndRoomHeaders(int next) {
+        return getUserAndRoomHeaders(testUserId + next, testRoomId);
     }
 
     @Test
@@ -92,7 +101,7 @@ public class SpreadControllerTest {
 
         ResultActions result = this.mockMvc.perform(
                 RestDocumentationRequestBuilders.post(BASE_PATH + SpreadController.MAPPING_DISTRIBUTE)
-                        .headers(getDefaultUserAndRoomHeaders())
+                        .headers(getUserAndRoomHeaders())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(body))
                         .accept(MediaType.APPLICATION_JSON)
@@ -144,12 +153,12 @@ public class SpreadControllerTest {
         amount2.setUpdatedAt(entity.getCreatedAt());
         entity.getAmounts().add(amount2);
 
-        given(spreadRepository.findByRoomIdAndToken(anyString(), anyString())).willReturn(entity);
+        given(spreadRepository.findByTokenAndRoomId(anyString(), anyString())).willReturn(entity);
 
         // WHEN
         ResultActions result = this.mockMvc.perform(
                 RestDocumentationRequestBuilders.get(BASE_PATH + SpreadController.MAPPING_DISTRIBUTE_STATUS)
-                        .headers(getDefaultUserAndRoomHeaders())
+                        .headers(getUserAndRoomHeaders())
                         .param("token", token)
                         .accept(MediaType.APPLICATION_JSON)
         );
@@ -200,12 +209,12 @@ public class SpreadControllerTest {
         amount2.setUpdatedAt(entity.getCreatedAt());
         entity.getAmounts().add(amount2);
 
-        given(spreadRepository.findByRoomIdAndToken(anyString(), anyString())).willReturn(entity);
+        given(spreadRepository.findByTokenAndRoomId(anyString(), anyString())).willReturn(entity);
 
         // WHEN
         ResultActions result = this.mockMvc.perform(
                 RestDocumentationRequestBuilders.post(BASE_PATH + SpreadController.MAPPING_RECEIVE)
-                        .headers(getDefaultUserAndRoomHeaders())
+                        .headers(getNextUserAndRoomHeaders(1))
                         .param("token", token)
                         .accept(MediaType.APPLICATION_JSON)
         );
