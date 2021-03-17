@@ -38,8 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(SpreadController.class)
-@AutoConfigureRestDocs()
-//@AutoConfigureRestDocs(uriScheme = "https", uriHost = "docs.api.com")
+@AutoConfigureRestDocs(uriHost = "host")
 public class SpreadControllerTest {
 
     @TestConfiguration

@@ -23,8 +23,8 @@ public class SpreadDocument {
     private static OperationRequestPreprocessor getDocumentRequest() {
         return preprocessRequest(
                 modifyUris()
-//                        .scheme("https")
-//                        .host("docs.api.com")
+                        .scheme("http")
+                        .host("host")
                         .removePort(),
                 prettyPrint());
     }

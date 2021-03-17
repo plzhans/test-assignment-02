@@ -472,7 +472,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sectionbody">
 <div class="literalblock">
 <div class="content">
-<pre>테스트용 뿌리기 API 입니다.</pre>
+<pre>뿌리기 API 가이드 입니다.</pre>
 </div>
 </div>
 </div>
@@ -487,8 +487,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h3 id="_header"><a class="link" href="#_header">Header</a></h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 30%;">
+<col style="width: 70%;">
 </colgroup>
 <thead>
 <tr>
@@ -498,11 +498,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>X-USER-ID"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>X-USER-ID</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">요청한 사용자의 식별값 (숫자)</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>X-ROOM-ID"</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>X-ROOM-ID</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">요청한 사용자가 속한 대화방의 식별값 (문자)</p></td>
 </tr>
 </tbody>
@@ -512,8 +512,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h3 id="_response_status"><a class="link" href="#_response_status">Response status</a></h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 30%;">
+<col style="width: 70%;">
 </colgroup>
 <thead>
 <tr>
@@ -544,9 +544,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
+<col style="width: 30%;">
+<col style="width: 30%;">
+<col style="width: 40%;">
 </colgroup>
 <thead>
 <tr>
@@ -589,7 +589,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost/v1/spray/distribute' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://host/v1/spray/distribute' -i -X POST \
     -H 'Content-Type: application/json;charset=UTF-8' \
     -H 'X-USER-ID: 1001' \
     -H 'X-ROOM-ID: room-test-id' \
@@ -640,7 +640,7 @@ X-USER-ID: 1001
 X-ROOM-ID: room-test-id
 Accept: application/json
 Content-Length: 48
-Host: localhost
+Host: host
 
 {
   "amount" : 1000,
@@ -695,9 +695,9 @@ Content-Type: application/json
 Content-Length: 109
 
 {
-  "token" : "abb",
-  "created_date" : "2021-03-18T01:01:51",
-  "expired_date" : "2021-03-18T01:11:51"
+  "token" : "2e3",
+  "created_date" : "2021-03-18T01:15:08",
+  "expired_date" : "2021-03-18T01:25:08"
 }</code></pre>
 </div>
 </div>
@@ -717,7 +717,7 @@ Content-Length: 109
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost/v1/spray/distribute/status?token=111' -i -X GET \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://host/v1/spray/distribute/status?token=111' -i -X GET \
     -H 'X-USER-ID: 1001' \
     -H 'X-ROOM-ID: room-test-id' \
     -H 'Accept: application/json'</code></pre>
@@ -753,7 +753,7 @@ Content-Length: 109
 X-USER-ID: 1001
 X-ROOM-ID: room-test-id
 Accept: application/json
-Host: localhost</code></pre>
+Host: host</code></pre>
 </div>
 </div>
 </div>
@@ -814,7 +814,7 @@ Content-Length: 205
 
 {
   "data" : {
-    "created_date" : "2021-03-18T01:00:51",
+    "created_date" : "2021-03-18T01:14:08",
     "total_amount" : 1000,
     "received_amount" : 200,
     "receivers" : [ {
@@ -841,7 +841,7 @@ Content-Length: 205
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://localhost/v1/spray/receive' -i -X POST \
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ curl 'http://host/v1/spray/receive' -i -X POST \
     -H 'X-USER-ID: 1002' \
     -H 'X-ROOM-ID: room-test-id' \
     -H 'Accept: application/json' \
@@ -878,7 +878,7 @@ Content-Length: 205
 X-USER-ID: 1002
 X-ROOM-ID: room-test-id
 Accept: application/json
-Host: localhost
+Host: host
 Content-Type: application/x-www-form-urlencoded
 
 token=111</code></pre>
@@ -942,7 +942,7 @@ Content-Length: 40
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-03-18 01:01:43 +0900
+Last updated 2021-03-18 01:05:34 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/github.min.css">
