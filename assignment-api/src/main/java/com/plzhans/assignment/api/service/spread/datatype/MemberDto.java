@@ -1,6 +1,6 @@
 //package com.plzhans.assignment.api.service.spread.datatype;
 //
-//import com.plzhans.assignment.common.entity.SpreadEventEntity;
+//import com.plzhans.assignment.common.entity.CacheSpreadEventEntity;
 //import lombok.Builder;
 //import lombok.Getter;
 //
@@ -18,7 +18,7 @@
 //    public MemberDto() {
 //    }
 //
-//    public MemberDto(SpreadEventEntity entity) {
+//    public MemberDto(CacheSpreadEventEntity entity) {
 //        this.no = entity.getNo();
 //        this.name = entity.getName();
 //        this.createdAt = entity.getCreatedAt();

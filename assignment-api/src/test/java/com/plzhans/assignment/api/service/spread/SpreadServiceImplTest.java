@@ -1,7 +1,10 @@
 package com.plzhans.assignment.api.service.spread;
 
 import com.plzhans.assignment.api.auth.AuthRoomRequester;
+import com.plzhans.assignment.api.infra.lock.ILock;
+import com.plzhans.assignment.api.infra.lock.LockInfra;
 import com.plzhans.assignment.api.repository.SpreadRepository;
+import com.plzhans.assignment.api.repository.cache.CacheRepository;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeParam;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeReceiveResultCode;
 import com.plzhans.assignment.common.domain.spread.SpreadState;
@@ -19,7 +22,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -31,6 +34,11 @@ public class SpreadServiceImplTest {
 
     @MockBean
     private SpreadRepository spreadRepository;
+    @MockBean
+    CacheRepository cacheRepository;
+    @MockBean
+    LockInfra lockInfra;
+
     private SpreadService spreadService;
     private AuthRoomRequester testRequester;
 
@@ -50,12 +58,24 @@ public class SpreadServiceImplTest {
         return entity;
     }
 
+    class TestLock implements ILock {
+        @Override
+        public boolean tryLock(long time, long waitTime) throws InterruptedException {
+            return true;
+        }
+    }
+
     /**
      * Init.
      */
     @Before
     public void init() {
-        this.spreadService = new SpreadServiceImpl(spreadRepository);
+        //
+        given(this.cacheRepository.getValue(anyString())).willReturn(null);
+        given(this.lockInfra.getLock(anyString(),anyInt())).willReturn(new TestLock());
+
+        //
+        this.spreadService = new SpreadServiceImpl(spreadRepository, cacheRepository, lockInfra);
         this.testRequester = new AuthRoomRequester(3019, "test-room");
     }
 

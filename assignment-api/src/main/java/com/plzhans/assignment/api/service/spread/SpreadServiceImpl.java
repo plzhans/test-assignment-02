@@ -1,11 +1,14 @@
 package com.plzhans.assignment.api.service.spread;
 
 import com.plzhans.assignment.api.auth.AuthRoomRequester;
+import com.plzhans.assignment.api.infra.lock.LockInfra;
 import com.plzhans.assignment.api.repository.SpreadRepository;
+import com.plzhans.assignment.api.repository.cache.CacheRepository;
 import com.plzhans.assignment.api.service.spread.datatype.*;
 import com.plzhans.assignment.common.domain.spread.SpreadState;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
 import com.plzhans.assignment.common.error.ClientError;
+import com.plzhans.assignment.common.error.ServerError;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,18 +18,24 @@ import java.time.LocalDateTime;
 @Service
 public class SpreadServiceImpl implements SpreadService {
 
-
     public static final int DEFAULT_DISTRIBUTE_EXPIRED_SECONDS = 60 * 10;
     public static final int DEFAULT_FIND_INACTIVE_DAYS = 7;
+
+    private static final long LOCK_TIME = 100L;
+    private static final long LOCK_WAIT_TIME = 100L;
 
     SpreadTokenGenerator spreadTokenGenerator;
     SpreadAmountGenerator spreadAmountGenerator;
     SpreadRepository spreadRepository;
+    LockInfra lockInfra;
+    CacheRepository cacheRepository;
 
-    public SpreadServiceImpl(SpreadRepository spreadRepository) {
+    public SpreadServiceImpl(SpreadRepository spreadRepository, CacheRepository cacheRepository, LockInfra lockInfra) {
         this.spreadTokenGenerator = new SpreadTokenGenerator();
         this.spreadAmountGenerator = new DefaultSpreadAmountGenerator();
         this.spreadRepository = spreadRepository;
+        this.cacheRepository = cacheRepository;
+        this.lockInfra = lockInfra;
     }
 
     @Transactional
@@ -59,6 +68,9 @@ public class SpreadServiceImpl implements SpreadService {
             throw new Exception("spreadRepository.save");
         }
 
+        // cache 등록
+        cacheRepository.setValue("spread:" + entity.getToken(), entity.getExpiredDate(), entity.getExpiredSeconds());
+
         // result
         return DistributeResult.builder()
                 .token(entity.getToken())
@@ -67,9 +79,38 @@ public class SpreadServiceImpl implements SpreadService {
                 .build();
     }
 
+    /**
+     * 캐시에서 선행 검사
+     *
+     * @param token
+     */
+    private boolean validatorCacheToken(String token) {
+
+        val expredDate = this.cacheRepository.<LocalDateTime>getValue(token);
+        if (expredDate != null) {
+            // 캐시가 있는데 만료시간이 지난 경우
+            if (expredDate.isBefore(LocalDateTime.now())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Transactional
     @Override
     public DistributeReceiveResult receiveByToken(AuthRoomRequester session, String token) throws Exception {
+
+        // 캐시에서 선행 검사
+        if (this.validatorCacheToken(token) == false) {
+            // 만료시간이 지남
+            return new DistributeReceiveResult(DistributeReceiveResultCode.Expired);
+        }
+
+        // 분산처리를 위한 User Lock 인터페이스
+        val lock = lockInfra.getLock(token, session.getUserId());
+            if (lock.tryLock(LOCK_TIME, LOCK_WAIT_TIME) == false) {
+            throw new ServerError.ConcurrentModification(String.format("ConcurrentModification. token=%s, userid=%s", token, session.getUserId()));
+        }
 
         val entity = this.spreadRepository.findByTokenAndRoomId(token, session.getRoomId());
         if (entity == null) {
@@ -124,7 +165,7 @@ public class SpreadServiceImpl implements SpreadService {
     }
 
     @Override
-    public DistributeStatusResult getDistributeStatusByToken(AuthRoomRequester session, String token){
+    public DistributeStatusResult getDistributeStatusByToken(AuthRoomRequester session, String token) {
 
         val entity = this.spreadRepository.findByTokenAndRoomId(token, session.getRoomId());
         if (entity == null) {

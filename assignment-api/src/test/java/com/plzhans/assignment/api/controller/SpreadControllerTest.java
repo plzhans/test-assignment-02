@@ -3,7 +3,10 @@ package com.plzhans.assignment.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plzhans.assignment.api.auth.AuthRoomResolver;
 import com.plzhans.assignment.api.controller.spread.SpreadController;
+import com.plzhans.assignment.api.infra.lock.ILock;
+import com.plzhans.assignment.api.infra.lock.LockInfra;
 import com.plzhans.assignment.api.repository.SpreadRepository;
+import com.plzhans.assignment.api.repository.cache.CacheRepository;
 import com.plzhans.assignment.api.service.spread.SpreadService;
 import com.plzhans.assignment.api.service.spread.SpreadServiceImpl;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeParam;
@@ -12,6 +15,7 @@ import com.plzhans.assignment.common.domain.spread.SpreadState;
 import com.plzhans.assignment.common.entity.SpreadAmountEntity;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
 import lombok.val;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
@@ -31,8 +35,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,8 +48,8 @@ public class SpreadControllerTest {
     static class Config {
 
         @Bean
-        SpreadService spreadService(SpreadRepository spreadRepository) {
-            return new SpreadServiceImpl(spreadRepository);
+        SpreadService spreadService(SpreadRepository spreadRepository, CacheRepository cacheRepository, LockInfra lockInfra) {
+            return new SpreadServiceImpl(spreadRepository, cacheRepository, lockInfra);
         }
     }
 
@@ -55,6 +58,12 @@ public class SpreadControllerTest {
 
     @MockBean
     private SpreadRepository spreadRepository;
+
+    @MockBean
+    private CacheRepository cacheRepository;
+
+    @MockBean
+    private LockInfra lockInfra;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -77,6 +86,23 @@ public class SpreadControllerTest {
 
     HttpHeaders getNextUserAndRoomHeaders(int next) {
         return getUserAndRoomHeaders(testUserId + next, testRoomId);
+    }
+
+    class TestLock implements ILock {
+        @Override
+        public boolean tryLock(long time, long waitTime) throws InterruptedException {
+            return true;
+        }
+    }
+
+    /**
+     * Init.
+     */
+    @Before
+    public void init() {
+        //
+        given(this.cacheRepository.getValue(anyString())).willReturn(null);
+        given(this.lockInfra.getLock(anyString(),anyInt())).willReturn(new TestLock());
     }
 
     @Test
