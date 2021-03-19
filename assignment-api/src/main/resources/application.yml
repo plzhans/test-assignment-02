@@ -21,7 +21,7 @@ spring:
   # db 설정
   datasource:
     schema: classpath*:db/${database}/schema.sql
-    data: classpath*:db/${database}/data.sql
+    #data: classpath*:db/${database}/data.sql
   # JPA
   jpa:
     database: ${database}
