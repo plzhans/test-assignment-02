@@ -2,6 +2,8 @@ package com.plzhans.assignment.api.infra.lock;
 
 import com.plzhans.assignment.api.config.RedisConfig;
 import com.plzhans.assignment.api.config.RedisEmbeddedConfig;
+import com.plzhans.assignment.api.service.lock.LockInfra;
+import com.plzhans.assignment.api.service.lock.RedisLockInfraImpl;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

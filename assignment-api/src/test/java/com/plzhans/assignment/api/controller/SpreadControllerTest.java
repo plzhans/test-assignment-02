@@ -3,7 +3,7 @@ package com.plzhans.assignment.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plzhans.assignment.api.auth.AuthRoomResolver;
 import com.plzhans.assignment.api.controller.spread.SpreadController;
-import com.plzhans.assignment.api.infra.lock.LockInfra;
+import com.plzhans.assignment.api.service.lock.LockInfra;
 import com.plzhans.assignment.api.repository.SpreadRepository;
 import com.plzhans.assignment.api.repository.cache.CacheRepository;
 import com.plzhans.assignment.api.service.lock.TestLock;

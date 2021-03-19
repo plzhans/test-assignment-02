@@ -1,7 +1,7 @@
 package com.plzhans.assignment.api.service.spread;
 
 import com.plzhans.assignment.api.auth.AuthRoomRequester;
-import com.plzhans.assignment.api.infra.lock.LockInfra;
+import com.plzhans.assignment.api.service.lock.LockInfra;
 import com.plzhans.assignment.api.repository.SpreadRepository;
 import com.plzhans.assignment.api.repository.cache.CacheRepository;
 import com.plzhans.assignment.api.service.spread.datatype.*;

@@ -1,4 +1,4 @@
-package com.plzhans.assignment.api.infra.lock;
+package com.plzhans.assignment.api.service.lock;
 
 import lombok.val;
 import org.redisson.api.RedissonClient;
