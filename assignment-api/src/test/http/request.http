@@ -1,0 +1,22 @@
+### 뿌리기
+POST http://localhost:9090/v1/spray/distribute
+Content-Type: application/json;charset=UTF-8
+X-USER-ID: 1001
+X-ROOM-ID: room-test-id
+
+{
+  "amount" : 1000,
+  "receiver_count" : 5
+}
+
+### 조회
+GET http://localhost:9090/v1/spray/distribute/status?token=330
+X-USER-ID: 1001
+X-ROOM-ID: room-test-id
+Accept: application/json
+
+### 받기
+POST http://localhost:9090/v1/spray/receive?token=330
+X-USER-ID: 1004
+X-ROOM-ID: room-test-id
+Accept: application/json

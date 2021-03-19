@@ -1,0 +1,14 @@
+######################################
+# debug
+######################################
+spring:
+  profiles: debug
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+logging:
+    org.springframework: debug
+    org.springframework.web: debug

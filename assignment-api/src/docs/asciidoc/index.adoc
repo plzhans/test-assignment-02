@@ -1,0 +1,164 @@
+= 머니 뿌리기 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+[[introduction]]
+== 소개
+
+ 뿌리기 API 가이드 입니다.
+
+[[common]]
+== 공통 사항
+
+아래 사항을 지켜주세요.
+
+//=== Domain
+//
+//|===
+//| 환경 | domain
+//
+//| 로컬 서버
+//| `localhost:9090`
+//
+//|===
+
+
+=== Header
+
+[cols="3,7"]
+|===
+| name | 설명
+
+| `X-USER-ID`
+| 요청한 사용자의 식별값 (숫자)
+| `X-ROOM-ID`
+| 요청한 사용자가 속한 대화방의 식별값 (문자)
+|===
+
+=== Response status
+
+[cols="3,7"]
+|===
+| status | 설명
+
+| `200`
+| OK : 성공
+
+| `403`
+| BadRequest : 잘못된 요청
+
+| `500`
+| 서버 오류
+
+|===
+
+=== 공통 오류 코드
+Response body에 code가 있는 경우
+
+[cols="3,3,4"]
+|===
+| code | name | 설명
+
+| `0`
+| Ok
+| 성공
+
+| `1001`
+| InvalidParams
+| 파라메터 오류
+
+| `1000`
+| Error
+| 일반 오류
+
+|===
+
+[[distribute]]
+== 뿌리기
+머니 뿌리기 API
+
+=== Request
+
+CURL:
+
+include::{snippets}/spread-controller-test/$distribute/curl-request.adoc[]
+
+Fields:
+
+include::{snippets}/spread-controller-test/$distribute/request-fields.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$distribute/http-request.adoc[]
+
+=== Response
+
+Fields:
+
+include::{snippets}/spread-controller-test/$distribute/response-fields.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$distribute/http-response.adoc[]
+
+
+[[distribute-status]]
+== 조회
+머니 뿌리기 조회 API
+
+=== Request
+
+CURL:
+
+include::{snippets}/spread-controller-test/$distribute_status/curl-request.adoc[]
+
+Parameters:
+
+include::{snippets}/spread-controller-test/$distribute_status/request-parameters.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$distribute_status/http-request.adoc[]
+
+=== Response
+
+Fields:
+
+include::{snippets}/spread-controller-test/$distribute_status/response-fields.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$distribute_status/http-response.adoc[]
+
+
+[[distribute-status]]
+== 받기
+머니 뿌리기 받기 API
+
+=== Request
+
+CURL:
+
+include::{snippets}/spread-controller-test/$receive/curl-request.adoc[]
+
+Parameters:
+
+include::{snippets}/spread-controller-test/$receive/request-parameters.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$receive/http-request.adoc[]
+
+=== Response
+
+Fields:
+
+include::{snippets}/spread-controller-test/$receive/response-fields.adoc[]
+
+HTTP Example:
+
+include::{snippets}/spread-controller-test/$receive/http-response.adoc[]

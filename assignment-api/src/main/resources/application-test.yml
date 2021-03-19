@@ -1,0 +1,16 @@
+######################################
+# test
+######################################
+spring:
+  profiles: test
+logging:
+  level:
+    com.plzhans.assignment.api.config: error
+    org.hibernate: error
+    org.springframework: error
+    org.springframework.web: error
+    com.plzhans.assignment.api:
+      controller: error
+
+
+

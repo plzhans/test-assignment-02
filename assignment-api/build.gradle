@@ -1,0 +1,65 @@
+plugins {
+    id 'org.asciidoctor.convert' version "1.5.9.2"
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+test {
+    testLogging.showStandardStreams = true
+    testLogging.showCauses = true
+    testLogging.showExceptions = true
+    testLogging.showStackTraces = true
+    testLogging.exceptionFormat = 'full'
+
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+}
+
+asciidoctor {
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation("org.redisson:redisson:3.13.3")
+
+    asciidoctor('org.springframework.restdocs:spring-restdocs-asciidoctor')
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test"){
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.6.3')
+    testCompile('org.junit.jupiter:junit-jupiter-params:5.6.3')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.6.3')
+
+    runtime("io.netty:netty-resolver-dns-native-macos:4.1.59.Final:osx-x86_64")
+
+//    // kafka
+//    implementation("org.springframework.kafka:spring-kafka")
+//    testImplementation("org.springframework.kafka:spring-kafka")
+
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
+}
+
+//task copyDocument(type: Copy) {
+//    dependsOn asciidoctor
+//    from file("build/asciidoc/html5/")
+//    into file("src/main/resources/static/docs")
+//    println("asciidoc copy ok.")
+//}
+
+build {
+//    dependsOn copyDocument
+}

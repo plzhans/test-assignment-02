@@ -30,3 +30,13 @@
 /target
 /out
 /build
+
+# assignment-common
+/assignment-common/target
+/assignment-common/out
+/assignment-common/build
+
+# assignment-api
+/assignment-api/target
+/assignment-api/out
+/assignment-api/build
