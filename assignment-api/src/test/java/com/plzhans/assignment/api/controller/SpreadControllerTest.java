@@ -3,10 +3,10 @@ package com.plzhans.assignment.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plzhans.assignment.api.auth.AuthRoomResolver;
 import com.plzhans.assignment.api.controller.spread.SpreadController;
-import com.plzhans.assignment.api.infra.lock.ILock;
 import com.plzhans.assignment.api.infra.lock.LockInfra;
 import com.plzhans.assignment.api.repository.SpreadRepository;
 import com.plzhans.assignment.api.repository.cache.CacheRepository;
+import com.plzhans.assignment.api.service.lock.TestLock;
 import com.plzhans.assignment.api.service.spread.SpreadService;
 import com.plzhans.assignment.api.service.spread.SpreadServiceImpl;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeParam;
@@ -88,13 +88,6 @@ public class SpreadControllerTest {
 
     HttpHeaders getNextUserAndRoomHeaders(int next) {
         return getUserAndRoomHeaders(testUserId + next, testRoomId);
-    }
-
-    class TestLock implements ILock {
-        @Override
-        public boolean tryLock(long time, long waitTime) throws InterruptedException {
-            return true;
-        }
     }
 
     /**

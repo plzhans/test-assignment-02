@@ -8,4 +8,6 @@ public interface CacheRepository {
     <T> void setValue(String key, T value, int expiredSeconds);
 
     <T> T getValue(String key);
+
+    boolean removeValue(String key);
 }

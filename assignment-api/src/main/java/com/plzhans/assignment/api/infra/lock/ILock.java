@@ -13,4 +13,9 @@ public interface ILock {
      * @throws InterruptedException the interrupted exception
      */
     boolean tryLock(long time, long waitTime) throws InterruptedException;
+
+    /**
+     * Un lock.
+     */
+    void unLock();
 }

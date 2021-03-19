@@ -24,12 +24,17 @@ public class CacheRepositoryImpl implements CacheRepository {
 
     @Override
     public <T> void setValue(String key, T value, int expiredSeconds) {
-        redissonClient.getBucket(key).set(value,expiredSeconds, TimeUnit.SECONDS );
+        redissonClient.getBucket(key).set(value, expiredSeconds, TimeUnit.SECONDS);
     }
 
     @Override
     public <T> T getValue(String key) {
         T value = redissonClient.<T>getBucket(key).get();
         return value;
+    }
+
+    @Override
+    public boolean removeValue(String key) {
+        return redissonClient.getBucket(key).delete();
     }
 }

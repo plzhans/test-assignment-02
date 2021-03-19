@@ -24,7 +24,13 @@ public class RedisLock implements ILock {
     }
 
     @Override
-    public boolean tryLock(long time, long waitTime) throws InterruptedException {
-        return this.rlock.tryLock(time, waitTime, TimeUnit.MICROSECONDS);
+    public boolean tryLock(long waitTime, long leaseTime) throws InterruptedException {
+        boolean locked = this.rlock.tryLock(waitTime, leaseTime, TimeUnit.MILLISECONDS);
+        return locked;
+    }
+
+    @Override
+    public void unLock() {
+        this.rlock.unlock();
     }
 }

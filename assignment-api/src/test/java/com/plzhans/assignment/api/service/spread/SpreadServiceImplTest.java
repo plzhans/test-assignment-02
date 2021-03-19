@@ -1,10 +1,10 @@
 package com.plzhans.assignment.api.service.spread;
 
 import com.plzhans.assignment.api.auth.AuthRoomRequester;
-import com.plzhans.assignment.api.infra.lock.ILock;
 import com.plzhans.assignment.api.infra.lock.LockInfra;
 import com.plzhans.assignment.api.repository.SpreadRepository;
 import com.plzhans.assignment.api.repository.cache.CacheRepository;
+import com.plzhans.assignment.api.service.lock.TestLock;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeParam;
 import com.plzhans.assignment.api.service.spread.datatype.DistributeReceiveResultCode;
 import com.plzhans.assignment.common.domain.spread.SpreadState;
@@ -57,13 +57,6 @@ public class SpreadServiceImplTest {
         entity.setUpdatedAt(entity.getCreatedAt());
         entity.addAmount(new int[]{100, 200, 300, 400});
         return entity;
-    }
-
-    class TestLock implements ILock {
-        @Override
-        public boolean tryLock(long time, long waitTime) throws InterruptedException {
-            return true;
-        }
     }
 
     /**

@@ -1,23 +1,14 @@
 database: h2
 
 # embed redis server
-redis.server.port : 9080
-
-# server
-server:
-  error:
-    include-stacktrace: always
-    include-exception: true
-    whitelabel:
-      enabled: false
-  port: 9090
+redis.embedded: true
 
 # spring
 spring:
   # redis 설정
   redis:
     host: localhost
-    port: 9080
+    port: 16379
   # db 설정
   datasource:
     schema: classpath*:db/${database}/schema.sql
@@ -28,20 +19,5 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
-#  # mvc
-#  mvc:
-#    view:
-#      prefix: /WEB-INF/views/
-#      suffix: .html
-logging:
-  file:
-    path: logs/apiserver
-  level:
-    org.hibernate: error
-    org.springframework: info
-    org.springframework.web: info
-    com.plzhans.assignment.api:
-      controller.ErrorController: error
-
 
 
