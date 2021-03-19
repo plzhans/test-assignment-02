@@ -19,5 +19,14 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
-
+logging:
+  file:
+    path: false
+  level:
+    com.plzhans.assignment.api.config: error
+    org.hibernate: error
+    org.springframework: error
+    org.springframework.web: error
+    com.plzhans.assignment.api:
+      controller: error
 

@@ -42,7 +42,7 @@ logging:
     org.springframework: info
     org.springframework.web: info
     com.plzhans.assignment.api:
-      controller.ErrorController: error
+      controller: error
 
 
 

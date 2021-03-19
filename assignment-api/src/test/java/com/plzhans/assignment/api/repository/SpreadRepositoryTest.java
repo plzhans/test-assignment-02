@@ -4,6 +4,7 @@ import com.plzhans.assignment.api.service.spread.SpreadTokenGenerator;
 import com.plzhans.assignment.common.domain.spread.SpreadState;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
 import lombok.val;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @EntityScan({"com.plzhans.assignment.common.entity", "com.plzhans.assignment.api.entity"})
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 //@ActiveProfiles("debug")
+@DisplayName("SpreadRepository - Test")
 @ExtendWith(SpringExtension.class)
 class SpreadRepositoryTest {
     @Autowired
     SpreadRepository spreadRepository;
 
     @Test
+    @DisplayName("SpreadEvent save")
     public void test_ok() {
 
         // WHEN
