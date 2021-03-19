@@ -2,12 +2,12 @@ package com.plzhans.assignment.api.infra.lock;
 
 import lombok.val;
 import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 /**
  * The type Redis lock infra.
  */
-@Repository
+@Component
 public class RedisLockInfraImpl implements LockInfra {
 
     private RedissonClient redissonClient;

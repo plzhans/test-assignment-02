@@ -1,7 +1,7 @@
 database: h2
 
 # embed redis server
-redis.embedded: true
+redis.server.port : 9080
 
 # server
 server:
