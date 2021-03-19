@@ -5,12 +5,10 @@ import com.plzhans.assignment.common.domain.CodeEnumable;
 
 public enum DistributeReceiveResultCode implements CodeEnumable {
 
-    Received(2001, "Already received"),
-    Finished(2002, "Already finished"),
-    Expired(2003, "Expired"),
+    Received(1, "Received"),
+    Finished(2, "Finished"),
 
-    Error(2000, "Ok"),
-    Ok(0, "Ok");
+    None(0, "None");
     int code;
     String message;
 

@@ -104,7 +104,7 @@ public class SpreadServiceImpl implements SpreadService {
         // 캐시에서 선행 검사
         if (!this.validatorCacheToken(token)) {
             // 만료시간이 지남
-            return new DistributeReceiveResult(DistributeReceiveResultCode.Expired);
+            throw new ClientError.Expired("receive_date");
         }
 
         // 분산처리를 위한 User Lock 인터페이스
@@ -126,7 +126,7 @@ public class SpreadServiceImpl implements SpreadService {
 
             // 만료시간이 지난 뿌리기는 받을수 없음
             if (entity.getExpiredDate().isBefore(LocalDateTime.now())) {
-                return new DistributeReceiveResult(DistributeReceiveResultCode.Expired);
+                throw new ClientError.Expired("receive_date");
             }
 
             val amounts = entity.getAmounts();
@@ -161,7 +161,7 @@ public class SpreadServiceImpl implements SpreadService {
             this.spreadRepository.save(entity);
 
             return DistributeReceiveResult.builder()
-                    .code(DistributeReceiveResultCode.Ok)
+                    .code(DistributeReceiveResultCode.Received)
                     .amount(amountEntity.getAmount())
                     .build();
         } catch (Exception err) {
@@ -170,6 +170,7 @@ public class SpreadServiceImpl implements SpreadService {
         }
     }
 
+    @Transactional
     @Override
     public DistributeStatusResult getDistributeStatusByToken(AuthRoomRequester session, String token) {
 

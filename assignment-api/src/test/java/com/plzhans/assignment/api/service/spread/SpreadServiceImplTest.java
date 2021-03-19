@@ -128,7 +128,7 @@ public class SpreadServiceImplTest {
             val receiveResult = this.spreadService.receiveByToken(receiver, result.getToken());
 
             // THEN
-            assertEquals(receiveResult.getCode(), DistributeReceiveResultCode.Ok);
+            assertEquals(receiveResult.getCode(), DistributeReceiveResultCode.Received);
             assertNotNull(receiveResult.getAmount());
 
             // NEXT
@@ -191,12 +191,13 @@ public class SpreadServiceImplTest {
         given(spreadRepository.findByTokenAndRoomId(token, testRequester.getRoomId())).willReturn(entity);
 
         // WHEN
-        val receiver = new AuthRoomRequester(testRequester.getUserId() + 1, testRequester.getRoomId());
-        val receiveResult = this.spreadService.receiveByToken(receiver, token);
+        Throwable throwable = assertThrows(ClientError.Expired.class, () -> {
+            val receiver = new AuthRoomRequester(testRequester.getUserId() + 1, testRequester.getRoomId());
+            val receiveResult = this.spreadService.receiveByToken(receiver, token);
+        });
 
         // THEN
-        assertEquals(receiveResult.getCode(), DistributeReceiveResultCode.Expired);
-        assertNotNull(receiveResult.getAmount());
+        assertEquals(throwable.getMessage(), "receive_date");
     }
 
     /**
@@ -219,7 +220,7 @@ public class SpreadServiceImplTest {
         val receiveResult = this.spreadService.receiveByToken(receiver, token);
 
         // THEN
-        assertEquals(receiveResult.getCode(), DistributeReceiveResultCode.Ok);
+        assertEquals(receiveResult.getCode(), DistributeReceiveResultCode.Received);
         assertNotNull(receiveResult.getAmount());
 
         // WHEN
