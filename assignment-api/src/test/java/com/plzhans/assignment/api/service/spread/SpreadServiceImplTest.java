@@ -11,25 +11,26 @@ import com.plzhans.assignment.common.domain.spread.SpreadState;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
 import com.plzhans.assignment.common.error.ClientError;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 /**
  * The type Spread service impl test.
  */
-@RunWith(SpringRunner.class)
 //@ActiveProfiles("debug")
+@DisplayName("SpreadService - Test")
+@ExtendWith(SpringExtension.class)
 public class SpreadServiceImplTest {
 
     @MockBean
@@ -68,11 +69,11 @@ public class SpreadServiceImplTest {
     /**
      * Init.
      */
-    @Before
+    @BeforeEach
     public void init() {
         //
         given(this.cacheRepository.getValue(anyString())).willReturn(null);
-        given(this.lockInfra.getLock(anyString(),anyInt())).willReturn(new TestLock());
+        given(this.lockInfra.getLock(anyString(), anyInt())).willReturn(new TestLock());
 
         //
         this.spreadService = new SpreadServiceImpl(spreadRepository, cacheRepository, lockInfra);
@@ -84,6 +85,7 @@ public class SpreadServiceImplTest {
      *
      * @throws Exception the exception
      */
+    @DisplayName("기본 로직")
     @Test
     public void test_logic() throws Exception {
 
@@ -158,7 +160,8 @@ public class SpreadServiceImplTest {
      *
      * @throws Exception the exception
      */
-    @Test(expected = ClientError.InvalidParam.class)
+    @DisplayName("자신이 받기 - 오류")
+    @Test
     public void receiveByToken_me_receive() throws Exception {
 
         // GIVEN
@@ -168,17 +171,21 @@ public class SpreadServiceImplTest {
         given(spreadRepository.findByTokenAndRoomId(token, testRequester.getRoomId())).willReturn(entity);
 
         // WHEN
-        val receiver = testRequester;
-        this.spreadService.receiveByToken(receiver, token);
+        Throwable throwable = assertThrows(ClientError.InvalidParam.class, () -> {
+            val receiver = testRequester;
+            this.spreadService.receiveByToken(receiver, token);
+        });
 
-        // THEN : ClientError.InvalidParam
+        // THEN
+        assertEquals(throwable.getMessage(), "user_id");
     }
 
     /**
-     * 만료시간 테스트
+     * 받기시간 만료
      *
      * @throws Exception the exception
      */
+    @DisplayName("받기시간 만료 - 오류")
     @Test
     public void receiveByToken_expired() throws Exception {
 
@@ -200,10 +207,11 @@ public class SpreadServiceImplTest {
     }
 
     /**
-     * 중복 테스트
+     * 중복 받기
      *
      * @throws Exception the exception
      */
+    @DisplayName("중복 받기 - 오류")
     @Test
     public void receiveByToken_overlap() throws Exception {
 
@@ -233,7 +241,8 @@ public class SpreadServiceImplTest {
      *
      * @throws Exception the exception
      */
-    @Test(expected = ClientError.Notfound.class)
+    @DisplayName("다른 룸 접근 - 오류")
+    @Test
     public void receiveByToken_not_equals_room() throws Exception {
 
         // GIVEN
@@ -242,11 +251,14 @@ public class SpreadServiceImplTest {
         val entity = createTestSpreadEventEntity(token);
         given(spreadRepository.findByTokenAndRoomId(token, testRequester.getRoomId())).willReturn(entity);
 
-        // WHEN
-        val receiver = new AuthRoomRequester(testRequester.getUserId() + 1, testRequester.getRoomId() + 1);
-        this.spreadService.receiveByToken(receiver, token);
+        // THEN
+        Throwable throwable = assertThrows(ClientError.Notfound.class, () -> {
+            val receiver = new AuthRoomRequester(testRequester.getUserId() + 1, testRequester.getRoomId() + 1);
+            this.spreadService.receiveByToken(receiver, token);
+        });
 
-        // THEN : ClientError.Notfound
+        // THEN
+        assertEquals(throwable.getMessage(), "spread");
     }
 
     /**
@@ -254,7 +266,8 @@ public class SpreadServiceImplTest {
      *
      * @throws Exception the exception
      */
-    @Test(expected = ClientError.Expired.class)
+    @DisplayName("만료된 뿌리기 조회 - 오류")
+    @Test
     public void getDistributeStatusByToken_expired() throws Exception {
 
         // GIVEN
@@ -266,19 +279,24 @@ public class SpreadServiceImplTest {
         given(spreadRepository.findByTokenAndRoomId(token, testRequester.getRoomId())).willReturn(entity);
 
         // WHEN
-        val invalidRequester = new AuthRoomRequester(testRequester.getUserId(), testRequester.getRoomId());
-        this.spreadService.getDistributeStatusByToken(invalidRequester, token);
+        Throwable throwable = assertThrows(ClientError.Expired.class, () -> {
+            // WHEN
+            val invalidRequester = new AuthRoomRequester(testRequester.getUserId(), testRequester.getRoomId());
+            this.spreadService.getDistributeStatusByToken(invalidRequester, token);
+        });
 
-        // THEN : ClientError.Expired
+        // THEN
+        assertEquals(throwable.getMessage(), String.format("expired %d days.", SpreadServiceImpl.DEFAULT_FIND_INACTIVE_DAYS));
     }
 
 
     /**
-     * 다른 유저 뿌리기 조회 접근
+     * 다른 유저 뿌리기 조회
      *
      * @throws Exception the exception
      */
-    @Test(expected = ClientError.Unauthorized.class)
+    @DisplayName("다른 유저 뿌리기 조회 - 오류")
+    @Test
     public void getDistributeStatusByToken_invalid_user() throws Exception {
 
         // GIVEN
@@ -288,18 +306,22 @@ public class SpreadServiceImplTest {
         given(spreadRepository.findByTokenAndRoomId(token, testRequester.getRoomId())).willReturn(entity);
 
         // WHEN
-        val invalidRequester = new AuthRoomRequester(testRequester.getUserId() + 1, testRequester.getRoomId());
-        this.spreadService.getDistributeStatusByToken(invalidRequester, token);
+        Throwable throwable = assertThrows(ClientError.Unauthorized.class, () -> {
+            val invalidRequester = new AuthRoomRequester(testRequester.getUserId() + 1, testRequester.getRoomId());
+            this.spreadService.getDistributeStatusByToken(invalidRequester, token);
+        });
 
-        // THEN : ClientError.Unauthorized
+        // THEN
+        assertEquals(throwable.getMessage(), "user_id");
     }
 
     /**
-     * 다른 룸 뿌리기 조회 접근
+     * 다른 룸 뿌리기 조회
      *
      * @throws Exception the exception
      */
-    @Test(expected = ClientError.Notfound.class)
+    @DisplayName("다른 룸 뿌리기 조회 - 오류")
+    @Test
     public void getDistributeStatusByToken_invalid_room() throws Exception {
 
         // GIVEN
@@ -309,9 +331,12 @@ public class SpreadServiceImplTest {
         given(spreadRepository.findByTokenAndRoomId(token, testRequester.getRoomId())).willReturn(entity);
 
         // WHEN
-        val invalidRequester = new AuthRoomRequester(testRequester.getUserId(), testRequester.getRoomId() + 1);
-        this.spreadService.getDistributeStatusByToken(invalidRequester, token);
+        Throwable throwable = assertThrows(ClientError.Notfound.class, () -> {
+            val invalidRequester = new AuthRoomRequester(testRequester.getUserId(), testRequester.getRoomId() + 1);
+            this.spreadService.getDistributeStatusByToken(invalidRequester, token);
+        });
 
-        // THEN : ClientError.Notfound
+        // THEN
+        assertEquals(throwable.getMessage(), "spread");
     }
 }

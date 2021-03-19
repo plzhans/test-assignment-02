@@ -15,9 +15,10 @@ import com.plzhans.assignment.common.domain.spread.SpreadState;
 import com.plzhans.assignment.common.entity.SpreadAmountEntity;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -28,7 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -39,9 +40,10 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(SpreadController.class)
 @AutoConfigureRestDocs(uriHost = "host")
+@ExtendWith(SpringExtension.class)
+@DisplayName("SpreadController - Test")
 public class SpreadControllerTest {
 
     @TestConfiguration
@@ -98,13 +100,14 @@ public class SpreadControllerTest {
     /**
      * Init.
      */
-    @Before
+    @BeforeEach
     public void init() {
         //
         given(this.cacheRepository.getValue(anyString())).willReturn(null);
         given(this.lockInfra.getLock(anyString(),anyInt())).willReturn(new TestLock());
     }
 
+    @DisplayName("뿌리기 성공")
     @Test
     public void distribute() throws Exception {
         // GIVEN
@@ -138,6 +141,7 @@ public class SpreadControllerTest {
                 .andDo(SpreadDocument.distribute());
     }
 
+    @DisplayName("뿌리기 조회")
     @Test
     public void distribute_status() throws Exception {
         // GIVEN
@@ -194,6 +198,7 @@ public class SpreadControllerTest {
                 .andDo(SpreadDocument.distribute_status());
     }
 
+    @DisplayName("받기 성공")
     @Test
     public void receive() throws Exception {
         // GIVEN

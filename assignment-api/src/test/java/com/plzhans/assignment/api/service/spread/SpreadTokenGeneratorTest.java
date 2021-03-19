@@ -1,11 +1,13 @@
 package com.plzhans.assignment.api.service.spread;
 
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DisplayName("token 생성기")
 public class SpreadTokenGeneratorTest {
 
     SpreadTokenGenerator tokenGenerator;
@@ -13,11 +15,12 @@ public class SpreadTokenGeneratorTest {
     /**
      * Init.
      */
-    @Before
+    @BeforeEach
     public void init() {
         this.tokenGenerator = new SpreadTokenGenerator();
     }
 
+    @DisplayName("token 생성 테스트")
     @Test
     public void nextToken_ok(){
         assertEquals(tokenGenerator.nextToken().length(), 3);
