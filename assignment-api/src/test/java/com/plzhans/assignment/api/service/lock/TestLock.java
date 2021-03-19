@@ -1,12 +1,15 @@
 package com.plzhans.assignment.api.service.lock;
 
+/**
+ * The type Test lock.
+ */
 public class TestLock implements ILock {
     @Override
-    public boolean tryLock(long time, long waitTime) throws InterruptedException {
+    public boolean tryLock(long waitTimeMs, long leaseTimeMs) {
         return true;
     }
 
     @Override
-    public void unLock() {
+    public void release() {
     }
 }

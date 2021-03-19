@@ -6,6 +6,7 @@ import com.plzhans.assignment.api.repository.SpreadRepository;
 import com.plzhans.assignment.api.repository.cache.CacheRepository;
 import com.plzhans.assignment.api.service.spread.datatype.*;
 import com.plzhans.assignment.common.domain.spread.SpreadState;
+import com.plzhans.assignment.common.entity.SpreadAmountEntity;
 import com.plzhans.assignment.common.entity.SpreadEventEntity;
 import com.plzhans.assignment.common.error.ClientError;
 import com.plzhans.assignment.common.error.ServerError;
@@ -21,8 +22,8 @@ public class SpreadServiceImpl implements SpreadService {
     public static final int DEFAULT_DISTRIBUTE_EXPIRED_SECONDS = 60 * 10;
     public static final int DEFAULT_FIND_INACTIVE_DAYS = 7;
 
-    private static final long LOCK_TIME = 100L;
-    private static final long LOCK_WAIT_TIME = 100L;
+    private static final long LOCK_LEASE_TIME_MS = 3000L;
+    private static final long LOCK_WAIT_TIME_MS = 3000L;
 
     SpreadTokenGenerator spreadTokenGenerator;
     SpreadAmountGenerator spreadAmountGenerator;
@@ -81,8 +82,8 @@ public class SpreadServiceImpl implements SpreadService {
 
     /**
      * 캐시에서 선행 검사
-     *
-     * @param token
+     * @param  token 토큰
+     * @return 결과
      */
     private boolean validatorCacheToken(String token) {
 
@@ -101,67 +102,72 @@ public class SpreadServiceImpl implements SpreadService {
     public DistributeReceiveResult receiveByToken(AuthRoomRequester session, String token) throws Exception {
 
         // 캐시에서 선행 검사
-        if (this.validatorCacheToken(token) == false) {
+        if (!this.validatorCacheToken(token)) {
             // 만료시간이 지남
             return new DistributeReceiveResult(DistributeReceiveResultCode.Expired);
         }
 
         // 분산처리를 위한 User Lock 인터페이스
         val lock = lockInfra.getLock(token, session.getUserId());
-            if (lock.tryLock(LOCK_TIME, LOCK_WAIT_TIME) == false) {
+        if (!lock.tryLock(LOCK_WAIT_TIME_MS, LOCK_LEASE_TIME_MS)) {
             throw new ServerError.ConcurrentModification(String.format("ConcurrentModification. token=%s, userid=%s", token, session.getUserId()));
         }
 
-        val entity = this.spreadRepository.findByTokenAndRoomId(token, session.getRoomId());
-        if (entity == null) {
-            throw new ClientError.Notfound("spread");
-        }
+        try {
+            val entity = this.spreadRepository.findByTokenAndRoomId(token, session.getRoomId());
+            if (entity == null) {
+                throw new ClientError.Notfound("spread");
+            }
 
-        // 자신이 받을수 없음
-        if (entity.getUserId() == session.getUserId()) {
-            throw new ClientError.InvalidParam("user_id");
-        }
+            // 자신이 받을수 없음
+            if (entity.getUserId() == session.getUserId()) {
+                throw new ClientError.InvalidParam("user_id");
+            }
 
-        // 만료시간이 지난 뿌리기는 받을수 없음
-        if (entity.getExpiredDate().isBefore(LocalDateTime.now())) {
-            return new DistributeReceiveResult(DistributeReceiveResultCode.Expired);
-        }
+            // 만료시간이 지난 뿌리기는 받을수 없음
+            if (entity.getExpiredDate().isBefore(LocalDateTime.now())) {
+                return new DistributeReceiveResult(DistributeReceiveResultCode.Expired);
+            }
 
-        val amounts = entity.getAmounts();
-        if (amounts == null) {
-            throw new ClientError.Notfound("amounts");
-        }
+            val amounts = entity.getAmounts();
+            if (amounts == null) {
+                throw new ClientError.Notfound("amounts");
+            }
 
-        // 중복 지급 받을 수 없음
-        val overlap = amounts.stream()
-                .filter(x -> x.getReceiverId() == session.getUserId())
-                .findFirst().orElse(null);
-        if (overlap != null) {
+            // 중복 지급 받을 수 없음
+            val overlap = amounts.stream()
+                    .filter(x -> x.getReceiverId() == session.getUserId())
+                    .findFirst().orElse(null);
+            if (overlap != null) {
+                return DistributeReceiveResult.builder()
+                        .code(DistributeReceiveResultCode.Received)
+                        .amount(overlap.getAmount())
+                        .build();
+            }
+
+            // 미지급한 금액 찾기
+            val amountEntity = amounts.stream()
+                    .filter(SpreadAmountEntity::isReady)
+                    .findFirst().orElse(null);
+            if (amountEntity == null) {
+                // 더이상 받을 금액이 없음
+                return new DistributeReceiveResult(DistributeReceiveResultCode.Finished);
+            }
+
+            // set received
+            amountEntity.setReceived(session.getUserId());
+
+            // repository save
+            this.spreadRepository.save(entity);
+
             return DistributeReceiveResult.builder()
-                    .code(DistributeReceiveResultCode.Received)
-                    .amount(overlap.getAmount())
+                    .code(DistributeReceiveResultCode.Ok)
+                    .amount(amountEntity.getAmount())
                     .build();
+        } catch (Exception err) {
+            lock.release();
+            throw err;
         }
-
-        // 미지급한 금액 찾기
-        val amountEntity = amounts.stream()
-                .filter(x -> x.isReady())
-                .findFirst().orElse(null);
-        if (amountEntity == null) {
-            // 더이상 받을 금액이 없음
-            return new DistributeReceiveResult(DistributeReceiveResultCode.Finished);
-        }
-
-        // set received
-        amountEntity.setReceived(session.getUserId());
-
-        // repository save
-        this.spreadRepository.save(entity);
-
-        return DistributeReceiveResult.builder()
-                .code(DistributeReceiveResultCode.Ok)
-                .amount(amountEntity.getAmount())
-                .build();
     }
 
     @Override
