@@ -1,6 +1,21 @@
 # Assignment Server
 
 ---
+## 빠른 실행 가이드
+```
+# ssh : git@github.com:plzhans/test-assignment-kakaopay.git
+git clone https://github.com/plzhans/test-assignment-kakaopay.git
+
+# 디렉토리 이동
+cd test-assignment-kakaopay
+
+# gradle 빌드
+./gradle build
+
+# 실행
+java -jar -Dfile.encoding=UTF-8 assignment-api/build/libs/assignment-api-0.0.1.jar
+```
+---
 
 ## 분석
 - 요구 사항 : [docs/plan.md](docs/plan.md)
