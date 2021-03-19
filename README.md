@@ -15,17 +15,17 @@
 ## 개발
 
 ### 토큰
-- token 난수는 UUID의 뒷 3자리 사용하도록 함
-- 3자리만 사용해서 중복이 발생할수 있지만 이번 과제에서는 무시함
+- token 난수는 UUID의 마지막 3자리 사용하도록 함
+- 3자리만 사용해서 중복이 발생할 수 있지만 이번 과제에서는 무시함
   
 ### 분산 서버 
 - 분산 서버에서 유저락을 지원하기 위해서 Redis 사용
 - 스핀 방식이 아닌 pubsub 기능을 이용한 [redisson](https://github.com/redisson/redisson) 사용  
 
 ### 트래픽 및 성능
-- 받기 API는 트래픽이 많을것으로 예상 되어 일부 캐시 처리
+- 받기 API는 트래픽이 많을 것으로 예상되어 일부 캐시 처리
 - token에 대한 받기 가능한 시간까지 redis 키가 유효한지 정도만 체크
-- 원래는 어느 정도 정보를 체크 하려 했지만 시간 관계상 패스
+- 원래는 어느 정도 정보를 체크하려 했지만 시간 관계상 패스
 
 ### 테스트 
 - junit5를 이용하여 기본적인 테스트 검증
@@ -33,6 +33,8 @@
 - Service, Repository 테스트
 - Module 테스트
 - Redis 테스트
+- 스크린샷
+- ![img.png](docs/screenshot/junit_01.png)
 
 ---
 ## 멀티 프로젝트
@@ -41,13 +43,13 @@
 - 공통으로 사용할 모듈 분리
 - DB 관련 Entity 포함
 
-
 ### API 
 - Path : [./assignment-api](./assignment-api) 
 - 머니 뿌리기, 받기, 조회 API
 - API 문서는 spring rest docs로 작성
 - [API document](https://plzhans.github.io/test-assignment-kakaopay/assignment-api-document.html)
-  - ![img.png](docs/screenshot/restdoc_01)
+- ![img.png](docs/screenshot/restdoc_01)
+
 ---
 
 ## 서버 구성
@@ -61,7 +63,7 @@
 ### Database Mysql
 
 - **h2 db를 사용할 경우 Pass**
-- 최초 1회 기본 스키마등록이 필요
+- 최초 1회 기본 스키마 등록이 필요
   - 스키마 : [schema.sql](./assignment-common/src/main/resources/db/mysql/schema.sql)
 - 환경설정은 [application-mysql.yml](./assignment-api/src/main/resources/application-mysql.yml) 을 참조
   ```yaml
@@ -92,7 +94,7 @@ spring:
 ```
 
 ### Docker
-mysql 또는 redis 테스트가 필요한경우 간단히 테스트 가능하도록 docker 처리
+mysql 또는 redis 테스트가 필요한 경우 간단히 테스트 가능하도록 docker 처리
 
 - 자세한 내용은 [docker-compose.yml](./docker-compose.yml) 를 참조
   ```
