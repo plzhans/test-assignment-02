@@ -19,3 +19,11 @@ services:
       - --collation-server=utf8mb4_unicode_ci
 #    volumes:
 #      - ./docker-data/mysql-assignment-test:/var/lib/mysql
+  redis:
+    image: redis:6.2.1
+    container_name: redis-assignment-test
+    ports:
+      - "16379:6379"
+    command: redis-server --port 6379
+    #    volumes:
+    #      - ./.docker-data/redis-assignment-test:/var/lib/mysql
