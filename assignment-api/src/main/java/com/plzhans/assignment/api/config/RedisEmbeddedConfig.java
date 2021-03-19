@@ -1,13 +1,14 @@
 package com.plzhans.assignment.api.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import redis.embedded.RedisServer;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Optional;
 
 /**
@@ -15,22 +16,34 @@ import java.util.Optional;
  */
 @Slf4j
 @Configuration()
-@ConditionalOnProperty(name = "redis.embedded", havingValue = "true")
-public class RedisEmbeddedConfig implements InitializingBean, DisposableBean {
+public class RedisEmbeddedConfig{
+
+    @Value("${redis.embedded}")
+    private boolean embedded;
 
     @Value("${spring.redis.port}")
     private int redisPort;
 
     private RedisServer redisServer;
 
-    @Override
+    @PostConstruct
     public void afterPropertiesSet() throws Exception {
+        if(embedded == false){
+            this.log.info("embedded redis server pass.");
+            return;
+        }
         redisServer = new RedisServer(redisPort);
+
+        this.log.info("embedded redis server begin. port={}", redisPort);
         redisServer.start();
-        this.log.info("embedded redis server start. port={}", redisPort);
+        if(!redisServer.isActive()){
+            this.log.error("embedded redis server fail.");
+            throw new Exception("embedded redis start fail.");
+        }
+        this.log.info("embedded redis server start.");
     }
 
-    @Override
+    @PreDestroy
     public void destroy() throws Exception {
         Optional.ofNullable(redisServer).ifPresent(RedisServer::stop);
         this.log.info("embedded redis server stop. port={}", redisPort);

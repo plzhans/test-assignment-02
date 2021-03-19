@@ -16,7 +16,7 @@ server:
 spring:
   # redis 설정
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 9080
   # db 설정
   datasource:
@@ -37,6 +37,7 @@ logging:
   file:
     path: logs/apiserver
   level:
+    com.plzhans.assignment.api.config: info
     org.hibernate: error
     org.springframework: info
     org.springframework.web: info

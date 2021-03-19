@@ -10,7 +10,7 @@ git clone https://github.com/plzhans/test-assignment-kakaopay.git
 cd test-assignment-kakaopay
 
 # gradle 빌드
-./gradle build
+./gradlew build
 
 # 실행
 java -jar -Dfile.encoding=UTF-8 assignment-api/build/libs/assignment-api-0.0.1.jar
@@ -21,8 +21,9 @@ java -jar -Dfile.encoding=UTF-8 assignment-api/build/libs/assignment-api-0.0.1.j
 - 요구 사항 : [docs/plan.md](docs/plan.md)
 
 ## 스팩
-- JAVA : 1.8, 
+- JAVA : 1.8
 - SpringBoot : 2.3.9
+- Build : gradle 
 - Test : Junit5
 - DB : mysql, redis
   - 개발 환경에서는 h2database 와 [embedded-redis](https://github.com/ozimov/embedded-redis) 를 사용

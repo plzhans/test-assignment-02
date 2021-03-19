@@ -37,6 +37,9 @@ dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.6.3')
     testCompile('org.junit.jupiter:junit-jupiter-params:5.6.3')
     testRuntime('org.junit.jupiter:junit-jupiter-engine:5.6.3')
+
+    runtime("io.netty:netty-resolver-dns-native-macos:4.1.59.Final:osx-x86_64")
+
 //    // kafka
 //    implementation("org.springframework.kafka:spring-kafka")
 //    testImplementation("org.springframework.kafka:spring-kafka")
